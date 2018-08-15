@@ -1,0 +1,26 @@
+{
+    "name": "telcolab/freshdesk-sdk",
+    "description": "A FreshDesk's SDK.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Haries Nur Ikhwan",
+            "email": "hariesnurikhwan@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "TelcoLAB\\Freshdesk\\SDK\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.1",
+        "php-http/multipart-stream-builder": "^1.0",
+        "laravie/codex": "^3.0",
+        "illuminate/support": "^5.5"
+    },
+    "require-dev": {
+        "php-http/curl-client": "^1.7"
+    }
+}
