@@ -11,6 +11,8 @@ trait Json
 
     protected function sendJsonWithoutValidate(string $method, $path, array $headers = [], $body = []): ResponseContract
     {
+        $headers['Content-Type'] = 'application/json';
+
         $body = $this->sanitizeFrom($body);
 
         $endpoint = ($path instanceof EndpointContract)
