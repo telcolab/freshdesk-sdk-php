@@ -12,7 +12,7 @@ class Freshdesk extends Client
 {
     use PreparePayload;
 
-    protected $apiEndpoint = 'https://pakarbiz.freshdesk.com/api/v2/';
+    protected $apiEndpoint;
 
     protected $defaultVersion = 'v1';
 
@@ -20,15 +20,16 @@ class Freshdesk extends Client
         'v1' => 'One',
     ];
 
-    public function __construct(HttpClient $http, string $key)
+    public function __construct(HttpClient $http, string $domain, string $key)
     {
-        $this->http = $http;
-        $this->key  = $key;
+        $this->http        = $http;
+        $this->apiEndpoint = $domain;
+        $this->key         = $key;
     }
 
-    public static function make(string $key)
+    public static function make(string $domain, string $key)
     {
-        return new static(Discovery::client(), $key);
+        return new static(Discovery::client(), $domain, $key);
     }
 
     protected function responseWith(ResponseInterface $response): ResponseContract
