@@ -56,17 +56,21 @@ class Contacts extends Request
 
     public function forceDelete(int $id, bool $force = false): void
     {
-        $this->sendJsonWithoutValidate('DELETE', "contacts/{$id}/hard_delete", $this->getApiHeaders(), [
-            'force' => $force,
-        ])->validateWith(function ($statusCode, $response) {
-            if ($statusCode === 400) {
-                throw new BadRequestException($response, 'Contact has not been soft deleted. Set force to `true` if want to force delete without soft delete the contact first.');
-            }
-        })->validate();
+        $this->sendJsonWithoutValidate('DELETE', $this->buildEndpointQuery("contacts/{$id}/hard_delete", ['force' => 'true']), $this->getApiHeaders(), [])
+            ->validateWith(function ($statusCode, $response) {
+                if ($statusCode === 400) {
+                    throw new BadRequestException($response, 'Contact has not been soft deleted. Set force to `true` if want to force delete without soft delete the contact first.');
+                }
+            })->validate();
     }
 
     public function restore(int $id): void
     {
         $this->sendJson('PUT', "contacts/{$id}/restore", $this->getApiHeaders());
+    }
+
+    public function buildEndpointQuery(string $path, array $query = [])
+    {
+        return static::to('', $path, $query);
     }
 }
