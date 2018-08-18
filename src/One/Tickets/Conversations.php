@@ -24,7 +24,7 @@ class Conversations extends Request
         ], $optional);
 
         return Conversation::response(
-            $this->sendJson('POST', "tickets/{$ticketId}/note", $this->getApiHeaders(), $payload)
+            $this->sendJson('POST', "tickets/{$ticketId}/notes", $this->getApiHeaders(), $payload)
         );
     }
 
