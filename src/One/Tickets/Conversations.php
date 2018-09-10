@@ -2,13 +2,14 @@
 namespace TelcoLAB\Freshdesk\SDK\One\Tickets;
 
 use Illuminate\Support\Collection;
+use Laravie\Codex\Concerns\Request\Multipart;
 use TelcoLAB\Freshdesk\SDK\Models\Conversation;
 use TelcoLAB\Freshdesk\SDK\Request;
 use TelcoLAB\Freshdesk\SDK\Traits\Json;
 
 class Conversations extends Request
 {
-    use Json;
+    use Json, Multipart;
 
     public function all(int $ticketId): Collection
     {
@@ -17,25 +18,49 @@ class Conversations extends Request
         );
     }
 
-    public function note(int $ticketId, string $description, array $optional = []): Conversation
+    public function note(int $ticketId, string $description, array $attachments = [], array $optional = []): Conversation
     {
         $payload = array_merge([
             'body' => $description,
         ], $optional);
 
+        if ($attachments) {
+            list($headers, $payload) = $this->prepareMultipartRequestPayloads(
+                $this->getApiHeaders(),
+                $payload,
+                $this->prepareAttachments($attachments)
+            );
+        } else {
+            $headers = array_merge($this->getApiHeaders(), [
+                'Content-Type' => 'application/json',
+            ]);
+        }
+
         return Conversation::response(
-            $this->sendJson('POST', "tickets/{$ticketId}/notes", $this->getApiHeaders(), $payload)
+            $this->send('POST', "tickets/{$ticketId}/notes", $headers, $payload)
         );
     }
 
-    public function reply(int $ticketId, string $description, array $optional = []): Conversation
+    public function reply(int $ticketId, string $description, array $attachments = [], array $optional = []): Conversation
     {
         $payload = array_merge([
             'body' => $description,
         ], $optional);
 
+        if ($attachments) {
+            list($headers, $payload) = $this->prepareMultipartRequestPayloads(
+                $this->getApiHeaders(),
+                $payload,
+                $this->prepareAttachments($attachments)
+            );
+        } else {
+            $headers = array_merge($this->getApiHeaders(), [
+                'Content-Type' => 'application/json',
+            ]);
+        }
+
         return Conversation::response(
-            $this->sendJson('POST', "tickets/{$ticketId}/reply", $this->getApiHeaders(), $payload)
+            $this->send('POST', "tickets/{$ticketId}/reply", $headers, $payload)
         );
     }
 

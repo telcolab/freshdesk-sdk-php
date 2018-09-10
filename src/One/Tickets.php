@@ -2,6 +2,7 @@
 namespace TelcoLAB\Freshdesk\SDK\One;
 
 use Illuminate\Support\Collection;
+use Laravie\Codex\Concerns\Request\Multipart;
 use TelcoLAB\Freshdesk\SDK\Models\Ticket;
 use TelcoLAB\Freshdesk\SDK\Query;
 use TelcoLAB\Freshdesk\SDK\Request;
@@ -9,12 +10,28 @@ use TelcoLAB\Freshdesk\SDK\Traits\Json;
 
 class Tickets extends Request
 {
-    use Json;
+    use Json, Multipart;
 
     public function all(Query $query = null): Collection
     {
         return Ticket::responseCollection(
             $this->sendJson('GET', 'tickets', $this->getApiHeaders(), $this->buildHttpQuery($query))
+        );
+    }
+
+    public function fields(string $field = null): Collection
+    {
+        $queries = [];
+
+        if (!is_null($field)) {
+            $queries = [
+                'type' => $field,
+            ];
+        }
+
+        return Collection::make(
+            $this->sendJson('GET', 'ticket_fields', $this->getApiHeaders(), $queries)
+                ->getContent()
         );
     }
 
@@ -35,7 +52,7 @@ class Tickets extends Request
         );
     }
 
-    public function create(string $name, string $email, string $subject, string $description, int $priority = 1, int $status = 2, array $optional = []): Ticket
+    public function create(string $name, string $email, string $subject, string $description, int $priority = 1, int $status = 2, array $attachments = [], array $optional = []): Ticket
     {
         $payload = array_merge([
             'name'        => $name,
@@ -46,8 +63,20 @@ class Tickets extends Request
             'status'      => $status,
         ], $optional);
 
+        if ($attachments) {
+            list($headers, $payload) = $this->prepareMultipartRequestPayloads(
+                $this->getApiHeaders(),
+                $payload,
+                $this->prepareAttachments($attachments)
+            );
+        } else {
+            $headers = array_merge($this->getApiHeaders(), [
+                'Content-Type' => 'application/json',
+            ]);
+        }
+
         return Ticket::response(
-            $this->sendJson('POST', 'tickets/', $this->getApiHeaders(), $payload)
+            $this->send('POST', 'tickets/', $headers, $payload)
         );
     }
 

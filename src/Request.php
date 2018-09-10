@@ -21,4 +21,15 @@ class Request extends BaseRequest
     {
         return '"' . $query . '"';
     }
+
+    final protected function prepareAttachments(array $items = [])
+    {
+        $attachments = [];
+
+        foreach ($items as $key => $value) {
+            $attachments["attachments[]"] = $value;
+        }
+
+        return $attachments;
+    }
 }
