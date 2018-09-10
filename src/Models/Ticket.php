@@ -1,6 +1,8 @@
 <?php
 namespace TelcoLAB\Freshdesk\SDK\Models;
 
+use Illuminate\Support\Carbon;
+
 class Ticket extends Model
 {
     public function map($item): array
@@ -24,10 +26,10 @@ class Ticket extends Model
             'type'             => $item->attribute('type'),
             'to_emails'        => $item->attribute('to_emails'),
             'product_id'       => $item->attribute('product_id'),
-            'created_at'       => $item->attribute('created_at'),
-            'updated_at'       => $item->attribute('updated_at'),
-            'due_by'           => $item->attribute('due_by'),
-            'fr_due_by'        => $item->attribute('fr_due_by'),
+            'created_at'       => Carbon::parse($item->attribute('created_at')),
+            'updated_at'       => Carbon::parse($item->attribute('updated_at')),
+            'due_by'           => Carbon::parse($item->attribute('due_by')),
+            'fr_due_by'        => Carbon::parse($item->attribute('fr_due_by')),
             'is_escalated'     => $item->attribute('is_escalated'),
             'association_type' => $item->attribute('association_type'),
             'description_text' => $item->attribute('description_text'),
@@ -35,6 +37,10 @@ class Ticket extends Model
             'custom_fields'    => $item->attribute('custom_fields'),
             'tags'             => $item->attribute('tags'),
             'attachments'      => $item->attribute('attachments'),
+            'stats'            => $item->attribute('stats'),
+            'requester'        => $item->attribute('requester'),
+            'conversations'    => $item->attribute('conversations'),
+            'company'          => $item->attribute('company'),
         ];
     }
 }

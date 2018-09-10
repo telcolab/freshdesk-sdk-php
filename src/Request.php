@@ -11,4 +11,14 @@ class Request extends BaseRequest
             'Authorization' => "Basic {$this->client->getBasicAuthToken()}",
         ];
     }
+
+    final protected function buildHttpQuery( ? Query $query) : array
+    {
+        return $query instanceof Query ? $query->toArray() : [];
+    }
+
+    final protected function wrapQuery($query): string
+    {
+        return '"' . $query . '"';
+    }
 }

@@ -18,9 +18,15 @@ abstract class Model implements Arrayable, Jsonable
         $this->original = static::make($data);
     }
 
-    public static function responseCollection(ResponseContract $response)
+    public static function responseCollection(ResponseContract $response, callable $closure = null)
     {
-        return static::collection(static::getContent($response));
+        $content = static::getContent($response);
+
+        if ($closure) {
+            $content = $closure($content);
+        }
+
+        return static::collection($content);
     }
 
     public static function response(ResponseContract $response)

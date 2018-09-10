@@ -3,6 +3,7 @@ namespace TelcoLAB\Freshdesk\SDK\One;
 
 use Illuminate\Support\Collection;
 use TelcoLAB\Freshdesk\SDK\Models\Ticket;
+use TelcoLAB\Freshdesk\SDK\Query;
 use TelcoLAB\Freshdesk\SDK\Request;
 use TelcoLAB\Freshdesk\SDK\Traits\Json;
 
@@ -10,17 +11,27 @@ class Tickets extends Request
 {
     use Json;
 
-    public function all(): Collection
+    public function all(Query $query = null): Collection
     {
         return Ticket::responseCollection(
-            $this->sendJson('GET', 'tickets', $this->getApiHeaders(), [])
+            $this->sendJson('GET', 'tickets', $this->getApiHeaders(), $this->buildHttpQuery($query))
         );
     }
 
-    public function show(int $id): Ticket
+    public function search($query)
+    {
+        return Ticket::responseCollection(
+            $this->sendJson('GET', 'search/tickets', $this->getApiHeaders(), ['query' => $this->wrapQuery($query)]),
+            function ($content) {
+                return $content['results'];
+            }
+        );
+    }
+
+    public function show(int $id, Query $query = null): Ticket
     {
         return Ticket::response(
-            $this->sendJson('GET', "tickets/{$id}", $this->getApiHeaders(), [])
+            $this->sendJson('GET', "tickets/{$id}", $this->getApiHeaders(), $this->buildHttpQuery($query))
         );
     }
 
